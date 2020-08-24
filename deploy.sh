@@ -10,7 +10,7 @@ cp ~/roger/assets/static_ip/interfaces /etc/network/interfaces
 
 #Configuing SSH
 rm -rf /etc/ssh/sshd_config
-cp roger/assets/sshd/sshd_config /etc/ssh/
+cp ~/roger/assets/ssh/sshd_config /etc/ssh/
 sudo mkdir /home/seronen/.ssh/
 sudo mkdir /home/seronen/.ssh/authorized_keys
 sudo cat ~/roger/assets/ssh/id_rsa.pub > /home/seronen/.ssh/authorized_keys
@@ -32,7 +32,8 @@ sudo ufw allow 50683/tcp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw reload
-sudo ssh service sshd restart
+sudo service sshd restart
+sudo service ssh restart
 
 #Disable services not needed
 sudo systemctl disable console-setup.service
