@@ -61,7 +61,7 @@ cp -r ~/roger/assets/scripts/ ~/
 #Apache2 setup
 sudo systemctl enable apache2
 rm -rf /var/www/html/
-cp -r ~/roger/assets/apache/ /var/www/html/
+cp -r ~/roger/assets/apache2/ /var/www/html/
 
 #SSL Setup
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=FI/ST=HEL/O=Hive/OU=roger-skyline-1/CN=192.168.1.195" -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt
