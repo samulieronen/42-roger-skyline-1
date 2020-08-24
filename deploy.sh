@@ -10,7 +10,7 @@ sudo mv ~/roger/assets/ssh/id_rsa.pub > /home/seronen/.ssh/authorized_keys
 sudo service ssh restart
 sudo service sshd restart
 sudo service networking restart
-sudo ifup enp0s3
+sudo ifup eth0
 
 #Fail2Ban setup
 cp ~/roger/assets/fail2ban/jail.local /etc/fail2ban/jail.local
