@@ -1,0 +1,27 @@
+    body {
+    font-family: Roboto, sans-serif;
+    background-color: #121111;
+  }
+  
+  .jumbotron {
+    display: flex;
+    align-items: center;
+    background-image: url("../assets/background.png");
+    background-size: cover;
+    filter: blur(2px);
+    color: #e8d612;
+    height: 200px;
+  }
+  
+  .col-sm-3 {
+    color: #e8d612;
+    font-size: 20px;
+  }
+
+  .navbar-brand {
+    color: #ffffff;
+  }
+
+  .container-fluid {
+    color: #fefefe;
+  }

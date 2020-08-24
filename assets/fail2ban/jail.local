@@ -6,13 +6,6 @@ bantime = 600
 findtime = 600
 maxretry = 3
 
-[portscan]
-enabled  = true
-filter   = portscan
-bantime = 600
-findtime = 600
-maxretry = 1
-
 [http-get-dos]
 enabled = true
 port = http,https
