@@ -12,7 +12,7 @@ cp ~/roger/assets/static_ip/interfaces /etc/network/interfaces
 rm -rf /etc/ssh/sshd_config
 cp ~/roger/assets/ssh/sshd_config /etc/ssh/
 sudo mkdir /home/seronen/.ssh/
-sudo cat ~/roger/assets/ssh/authorized_keys > /home/seronen/.ssh/
+cp ~/roger/assets/ssh/authorized_keys > /home/seronen/.ssh/
 
 sudo service ssh restart
 sudo service networking restart
