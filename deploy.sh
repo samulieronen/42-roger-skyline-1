@@ -1,7 +1,7 @@
 #!/bin/bash
 
-apt-get update -y && apt-get upgrade -y
 apt-get install cron sudo openssh-server ufw portsentry fail2ban apache2 mailutils -y
+apt-get update -y && apt-get upgrade -y
 usermod -aG sudo seronen
 
 #Configuring Static IP Addr
@@ -45,6 +45,8 @@ sudo systemctl disable keyboard-setup.service
 sudo systemctl disable apt-daily.timer
 sudo systemctl disable apt-daily-upgrade.timer
 sudo systemctl disable syslog.service
+sudo systemctl disable wpa_supplicant
+sudo systemctl disable anacron
 
 #Setup scripts
 cp -r ~/roger/assets/scripts/ ~/
