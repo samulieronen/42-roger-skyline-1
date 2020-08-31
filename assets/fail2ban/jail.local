@@ -1,10 +1,10 @@
-[sshd]
-enabled = true
-port = 2222
-filter = sshd
-bantime = 600
-findtime = 600
-maxretry = 3
+#[sshd]
+#enabled = true
+#port = 50683
+#filter = sshd
+#bantime = 600
+#findtime = 600
+#maxretry = 3
 
 [http-get-dos]
 enabled = true
@@ -14,4 +14,4 @@ logpath = /var/log/apache2/access.log
 maxretry = 300
 findtime = 300
 bantime = 600
-action = iptables[name=HTTP, port=http, protocol=tcp]
+action = iptables-multiport[name=HTTP, port="http,https", protocol=tcp]

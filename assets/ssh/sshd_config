@@ -12,7 +12,7 @@
 
 Port 50683
 #AddressFamily any
-ListenAddress 192.168.1.195
+ListenAddress 192.168.1.54
 #ListenAddress ::
 
 #HostKey /etc/ssh/ssh_host_rsa_key
@@ -23,8 +23,8 @@ ListenAddress 192.168.1.195
 #RekeyLimit default none
 
 # Logging
-#SyslogFacility AUTH
-#LogLevel INFO
+SyslogFacility AUTH
+LogLevel INFO
 
 # Authentication:
 

@@ -1,0 +1,162 @@
+DIARY OF MY ROGER_SKYLINE_1 PROGRESS
+
+OS:
+	Chose Debian Buster (10) with VirtualBox as hypervisor.
+
+VM PART --------------------------------------------------------------------------------
+
+1.	Made a partition when installing debian. Had to take 4.5GB for swap for
+	a clean 4.2GB partition size result. Used # su -, # fdisk -l to check partition size
+
+2.	Disk overall size is 8GB, dev/sda.
+
+3.	Updated packages
+				# sudo apt-get update -y
+				# sudo apt-get upgrade -y 
+
+NETWORK AND SECURITY PART ---------------------------------------------------------------
+
+1.	Had to install sudo: 	#su -
+				#apt-get install sudo
+				- Use "visudo" to add nonroot user to sudoers list:
+				<USRNAME> ALL:(ALL:ALL) NOPASSWD:ALL
+				- Try out sudo with nonroot user
+
+2.	On mac terminal: 	#ssh seronen@192.168.1.210
+	I connected successfully!
+
+3.	Removed "dhcp" from etc/network/interfaces using nano
+	Changed primary: 	"allow-hotplug enp0s3
+				 iface enp0s3 inet static
+						address <YOUR IP HERE> 
+						netmask 255.255.255.252
+						gateway <YOUR GATEWAY HERE>			//FIX
+
+4. Modify /etc/ssh/sshd_config file:
+	- Listenaddress: <IP>
+	- Port: <PORT of your choosing>
+		Note that you should use only ports ranging from 49152–65535.
+		I chose port 50683.
+
+5. Install UFW
+	# apt-get install ufw -y
+	# sudo ufw allow 50683/tcp (SSH)
+	# sudo ufw allow 443/tcp (HTTPS)
+	# sudo ufw allow 80/tcp (HTTP)
+	This opens our ssh, http and https ports for traffic!
+	-Reload ufw
+	# sudo ufw reload
+
+6. Install fail2ban
+	# sudo apt-get install fail2ban -y
+	copy /etc/fail2ban/jail.conf to jail.local and modify it to have:
+		[sshd]
+		enabled = true
+		port = 2222
+		filter = sshd
+		bantime = 600
+		findtime = 600
+		maxretry = 3
+
+		[http-get-dos]
+		enabled = true
+		port = http,https
+		filter = http-get-dos
+		logpath = /var/log/apache2/access.log
+		maxretry = 300
+		findtime = 300
+		bantime = 600
+		action = iptables-multiport[name=HTTP, port="http,https", protocol=tcp]			
+		
+	// We want to block the attacker's IP on http AND https ports.
+	add regex rules for http-get-dos
+		[Definition]
+		failregex = ^<HOST> -.*"(GET|POST).*
+		ignoreregex =
+	# sudo ufw reload		//Reload firewall just in case
+	# sudo systemctl restart fail2ban //Restart fail2ban
+
+	You can use slowloris to check that the ban works
+
+7.	Portsentry configuration
+	in /etc/default/portsentry using nano
+
+	set BLOCK_UDP= to 1
+	set BLOCK_TCP= to 1
+	comment out KILL_ROUTE="/sbin/route add -host $TARGET$ reject" with #
+	take comment away from KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"
+	We want to drop all packets from attackers IP
+	
+	Restart portsentry: sudo systemctl restart portsentry
+	You can use nmap or other service to check functionality
+
+8.	Stopping unnecessary services
+	Use "sudo systemctl list-unit-files --type service | grep enabled" to see all enabled services
+	sudo systemctl disable console-setup.service
+	sudo systemctl disable keyboard-setup.service
+	sudo systemctl disable apt-daily.timer
+	sudo systemctl disable apt-daily-upgrade.timer
+	sudo systemctl disable syslog.service			//Depending on your preference
+	
+	Disable all unnecessary.
+
+9. Scripts
+	Sripts can be found in assets/Scripts
+
+	Make sure cron is enabled and .sh files have proper rights:
+	chmod 755 <Filename>
+	sudo systemctl enable cron
+
+WEB PART -------------------------------------------------------------------------------
+
+10. Install apache2
+	# sudo apt-get install apache2
+	Check if apache2 default page is showing typing your IP into browser
+
+	IF NOT, restart apache with
+	# sudo systemctl restart apache2
+	See apache2 server status:
+	# sudo systemctl status apache2
+
+	Move your website to /var/www/html to make it live.
+	make sure to remove or rename old html.index file!
+	restart apache2 to see your webiste!
+
+11. Configure SSL
+	If openssl is not present, # apt-get install openssl
+	to make ssl certificate:
+	# sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out /etc/ssl/localcerts/apache.pem -keyout /etc/ssl/localcerts/apache.key
+	Answer the following questions truthfully!!
+
+	sudo chmod 600 /etc/ssl/localcerts/apache*
+	To make ssl read-only so no-one will tamper with it!
+
+	Enable ssl
+	# sudo a2enmod ssl
+
+	Modify /etc/apache2/conf-available/ssl-params.conf to look like assets/ssl/ssl-params.conf
+
+	Modify /etc/apache2/sites-available/default-ssl.conf to look like assets/ssl/default-ssl.conf
+
+	Modify /etc/apache2/sites-available/000-default.conf to "redirect premanent" http to https.
+
+	Make changes live:
+	# sudo a2enmod ssl
+	# sudo a2enmod headers
+	# sudo a2ensite default-ssl
+	# sudo a2enconf ssl-params
+	# sudo systemctl reload apache2
+
+	Now you should have an SSL on your website.
+	IF NOT, run # systemctl status apache2, and it will give you some hint if one of your files has f.ex. a syntax error.
+
+	As the SSL Cert is self-signed your browser will warn about a security risk, but don't mind it and proceed to site.
+	(You cannot validate yourself... You can use a paid SSL to make that go away.)
+
+	Send requests to your server by reloading it via browser, and "tail -f /var/log/fail2ban" to see activity on the server.
+
+
+	Please see deploy.sh to check a fully functional script to automate the whole process.
+	Though it should be ran as root and filenames, users and interfaces should be changed according to your configuration.
+	
+	Thank you and good luck.
